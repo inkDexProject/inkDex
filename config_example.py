@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 # Ruta de la biblioteca de Calibre
-RUTA_CALIBRE_POR_DEFECTO = "/ruta/a/tu/biblioteca/Calibre"
+RUTA_CALIBRE_POR_DEFECTO = r"/ruta/a/tu/biblioteca/Calibre"
 
 CALIBRE_LIBRARY = Path(
     os.environ.get(
