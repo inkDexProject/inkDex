@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color" content="#F5F2EA">
+    <meta name="description"
+          content="Detalles, información y formatos disponibles del libro.">
+
+    <title>{{ libro.title }} — Inkdex</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+    <!-- Encabezado de marca -->
+    <header class="site-header">
+        <div class="brand">
+            <a class="brand-link"
+               href="{{ url_for('inicio') }}"
+               aria-label="Inkdex, ir al inicio">
+
+                <svg class="brand-icon"
+                     xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 48 48"
+                     width="42"
+                     height="42"
+                     aria-hidden="true">
+
+                    <path
+                        d="M5 10 Q15 7 24 14 Q33 7 43 10 V37 Q33 34 24 41 Q15 34 5 37 Z"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linejoin="round"
+                    />
+
+                    <path
+                        d="M24 14 V41"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                    />
+
+                    <path
+                        d="M10 16 Q16 15 20 19
+                           M10 23 Q16 22 20 26
+                           M28 19 Q34 15 38 16
+                           M28 26 Q34 22 38 23"
+                        fill="none"
+                        stroke="#5B7A67"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                    />
+                </svg>
+
+                <span class="brand-copy">
+                    <span class="brand-name">Inkdex</span>
+                    <span class="brand-tagline">
+                        Tu biblioteca, siempre a mano.
+                    </span>
+                </span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="container book-detail">
+
+        <!-- Volver al catálogo -->
+        <p class="back-link">
+            {% if volver_url and volver_url.startswith('/') and not volver_url.startswith('//') %}
+                <a href="{{ volver_url }}">← Volver al catálogo</a>
+            {% else %}
+                <a href="{{ url_for('inicio') }}">← Volver al catálogo</a>
+            {% endif %}
+        </p>
+
+        <div class="detail-layout">
+
+            <!-- Portada -->
+            <div class="detail-cover">
+                <img
+                    src="{{ url_for('portada', book_id=libro.id) }}"
+                    alt="Portada de {{ libro.title }}"
+                >
+            </div>
+
+            <!-- Información del libro -->
+            <section class="detail-info">
+
+                <p class="eyebrow">DETALLES DEL LIBRO</p>
+
+                <h2>{{ libro.title }}</h2>
+
+                <p>
+                    <strong>Autor/es:</strong>
+                    {{ libro.authors|join(', ') if libro.authors else 'Autor desconocido' }}
+                </p>
+
+                {% if libro.series %}
+                    <p>
+                        <strong>Serie:</strong>
+                        {% for serie in libro.series %}
+                            {{ serie.name }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                {% endif %}
+
+                {% if libro.tags %}
+                    <p>
+                        <strong>Etiquetas:</strong>
+                        {{ libro.tags|join(', ') }}
+                    </p>
+                {% endif %}
+
+                <!-- Descripción -->
+                <section class="detail-section">
+                    <h3>Descripción</h3>
+
+                    {% if libro.comments and libro.comments|striptags|trim %}
+                        <div class="description">
+                            {{ libro.comments|striptags }}
+                        </div>
+                    {% else %}
+                        <p>No hay descripción disponible para este libro.</p>
+                    {% endif %}
+                </section>
+
+                <!-- Descargas -->
+                <section class="detail-section">
+                    <h3>Formatos disponibles</h3>
+
+                    {% if libro.formats %}
+                        <div class="download-options">
+                            {% for formato in libro.formats %}
+                                <a
+                                    class="download-button"
+                                    href="{{ url_for(
+                                        'descargar_libro',
+                                        book_id=libro.id,
+                                        formato=formato.format
+                                    ) }}"
+                                >
+                                    Descargar {{ formato.format|upper }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>No hay formatos disponibles para descargar.</p>
+                    {% endif %}
+
+                    <p class="download-note">
+                        Las descargas corresponden a los formatos disponibles
+                        en tu biblioteca de Calibre.
+                    </p>
+                </section>
+
+            </section>
+        </div>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="site-footer">
+        <p>Inkdex · Tu biblioteca, siempre a mano.</p>
+        <a href='https://cafecito.app/inkdex' rel='noopener' target='_blank'><img srcset='https://cdn.cafecito.app/imgs/buttons/button_5.png 1x, https://cdn.cafecito.app/imgs/buttons/button_5_2x.png 2x, https://cdn.cafecito.app/imgs/buttons/button_5_3.75x.png 3.75x' src='https://cdn.cafecito.app/imgs/buttons/button_5.png' alt='Invitame un café en cafecito.app' /></a>
+    </footer>
+</body>
+</html>

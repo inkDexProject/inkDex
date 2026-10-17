@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color" content="#F5F2EA">
+    <meta name="description" content="Explorá tu colección de libros con Inkdex.">
+
+    <title>Inkdex — Tu biblioteca personal</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+    <!-- Encabezado de marca -->
+    <header class="site-header">
+        <div class="brand">
+            <a class="brand-link"
+               href="{{ url_for('inicio') }}"
+               aria-label="Inkdex, ir al inicio">
+
+                <svg class="brand-icon"
+                     xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 48 48"
+                     width="42"
+                     height="42"
+                     aria-hidden="true">
+
+                    <path
+                        d="M5 10 Q15 7 24 14 Q33 7 43 10 V37 Q33 34 24 41 Q15 34 5 37 Z"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linejoin="round"
+                    />
+
+                    <path
+                        d="M24 14 V41"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                    />
+
+                    <path
+                        d="M10 16 Q16 15 20 19
+                           M10 23 Q16 22 20 26
+                           M28 19 Q34 15 38 16
+                           M28 26 Q34 22 38 23"
+                        fill="none"
+                        stroke="#5B7A67"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                    />
+                </svg>
+
+                <span class="brand-copy">
+                    <span class="brand-name">Inkdex</span>
+                    <span class="brand-tagline">
+                        Tu biblioteca, siempre a mano.
+                    </span>
+                </span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="container">
+
+        <!-- Presentación -->
+        <section class="welcome">
+            <p class="eyebrow">TU ESPACIO DE LECTURA</p>
+
+            <h2>Un libro siempre te espera.</h2>
+
+            <p>
+                Explorá tu colección y encontrá tu próxima lectura.
+            </p>
+        </section>
+
+        <!-- Catálogo -->
+        <section class="catalog">
+
+            <div class="catalog-heading">
+                <h2>Mi biblioteca</h2>
+
+                {% if busqueda %}
+                    <p>Resultados para: {{ busqueda }}</p>
+                {% endif %}
+
+                <p>
+                    Mostrando {{ libros|length }} de {{ total }} libros
+                </p>
+            </div>
+
+            <!-- Búsqueda y filtros -->
+            <form class="search-form"
+                  action="{{ url_for('inicio') }}"
+                  method="get">
+
+                <label for="search">Buscar por título o autor</label>
+
+                <input
+                    type="search"
+                    id="search"
+                    name="q"
+                    placeholder="Título o autor..."
+                    value="{{ busqueda }}"
+                >
+
+                <label for="autor">Filtrar por autor</label>
+
+                <select id="autor" name="autor">
+                    <option value="">Todos los autores</option>
+
+                    {% for autor in autores %}
+                        <option
+                            value="{{ autor.id }}"
+                            {% if autor_seleccionado == autor.id|string %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ autor.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <label for="serie">Filtrar por serie</label>
+
+                <select id="serie" name="serie">
+                    <option value="">Todas las series</option>
+
+                    {% for serie in series %}
+                        <option
+                            value="{{ serie.id }}"
+                            {% if serie_seleccionada == serie.id|string %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ serie.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <label for="etiqueta">Filtrar por etiqueta</label>
+
+                <select id="etiqueta" name="etiqueta">
+                    <option value="">Todas las etiquetas</option>
+
+                    {% for etiqueta in etiquetas %}
+                        <option
+                            value="{{ etiqueta.id }}"
+                            {% if etiqueta_seleccionada == etiqueta.id|string %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ etiqueta.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <label for="orden">Ordenar por</label>
+
+                <select id="orden" name="orden">
+                    <option
+                        value="titulo_asc"
+                        {% if orden_seleccionado == 'titulo_asc' %}
+                            selected
+                        {% endif %}
+                    >
+                        Título: A a Z
+                    </option>
+
+                    <option
+                        value="titulo_desc"
+                        {% if orden_seleccionado == 'titulo_desc' %}
+                            selected
+                        {% endif %}
+                    >
+                        Título: Z a A
+                    </option>
+
+                    <option
+                        value="autor"
+                        {% if orden_seleccionado == 'autor' %}
+                            selected
+                        {% endif %}
+                    >
+                        Autor: A a Z
+                    </option>
+
+                    <option
+                        value="recientes"
+                        {% if orden_seleccionado == 'recientes' %}
+                            selected
+                        {% endif %}
+                    >
+                        Incorporados o modificados recientemente
+                    </option>
+                </select>
+
+                <button type="submit">Aplicar filtros</button>
+
+                <a href="{{ url_for('inicio') }}">
+                    Limpiar filtros
+                </a>
+            </form>
+
+            <!-- Grilla de libros -->
+            <div class="book-grid">
+                {% for libro in libros %}
+
+                    <article class="book-card">
+                        <a
+                            class="book-link"
+                            href="{{ url_for(
+                                'detalle_libro',
+                                book_id=libro.id,
+                                volver=request.full_path
+                            ) }}"
+                        >
+                            <div class="book-cover">
+                                <img
+                                    src="{{ url_for(
+                                        'portada',
+                                        book_id=libro.id
+                                    ) }}"
+                                    alt="Portada de {{ libro.title }}"
+                                    loading="lazy"
+                                >
+                            </div>
+
+                            <div class="book-info">
+                                <h3>{{ libro.title }}</h3>
+                                <p>{{ libro.authors }}</p>
+                            </div>
+                        </a>
+                    </article>
+
+                {% else %}
+
+                    <p>
+                        No se encontraron libros en la biblioteca.
+                    </p>
+
+                {% endfor %}
+            </div>
+
+            <!-- Paginación -->
+            {% if total_paginas > 1 %}
+                <nav class="pagination"
+                     aria-label="Paginación del catálogo">
+
+                    {% if pagina > 1 %}
+                        <a href="{{ url_for(
+                            'inicio',
+                            q=busqueda,
+                            autor=autor_seleccionado,
+                            serie=serie_seleccionada,
+                            etiqueta=etiqueta_seleccionada,
+                            pagina=pagina - 1,
+                            orden=orden_seleccionado
+                        ) }}">
+                            &larr; Anterior
+                        </a>
+                    {% endif %}
+
+                    <span>
+                        Página {{ pagina }} de {{ total_paginas }}
+                    </span>
+
+                    {% if pagina < total_paginas %}
+                        <a href="{{ url_for(
+                            'inicio',
+                            q=busqueda,
+                            autor=autor_seleccionado,
+                            serie=serie_seleccionada,
+                            etiqueta=etiqueta_seleccionada,
+                            pagina=pagina + 1,
+                            orden=orden_seleccionado
+                        ) }}">
+                            Siguiente &rarr;
+                        </a>
+                    {% endif %}
+
+                </nav>
+            {% endif %}
+
+        </section>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="site-footer">
+        <p>Inkdex · Tu biblioteca, siempre a mano.</p>
+        <a href='https://cafecito.app/inkdex' rel='noopener' target='_blank'><img srcset='https://cdn.cafecito.app/imgs/buttons/button_5.png 1x, https://cdn.cafecito.app/imgs/buttons/button_5_2x.png 2x, https://cdn.cafecito.app/imgs/buttons/button_5_3.75x.png 3.75x' src='https://cdn.cafecito.app/imgs/buttons/button_5.png' alt='Invitame un café en cafecito.app' /></a>
+    </footer>
+</body>
+</html>
