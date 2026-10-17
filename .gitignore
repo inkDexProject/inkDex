@@ -1,0 +1,36 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Archivos generados por Python
+__pycache__/
+*.py[cod]
+*.log
+
+# Configuración local
+config.py
+config.local.py
+.env
+.env.*
+!.env.example
+
+# DBs
+metadata.db
+*.sqlite
+*.sqlite3
+
+# Test
+test_calibre.py
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Configuración del editor
+.vscode/
+.idea/
+
+# Archivos de arranque
+*.pid
