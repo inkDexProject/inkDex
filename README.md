@@ -52,8 +52,6 @@ La computadora anfitriona debe poder acceder a la carpeta de la biblioteca. Los 
 - Una biblioteca de Calibre existente y accesible.
 - Conectividad de red entre la computadora anfitriona y los dispositivos clientes.
 
-> La versión mínima de Python debe confirmarse con las dependencias y los entornos compatibles antes de publicar una versión estable.
-
 ## Instalación
 
 ### 1. Obtener el proyecto
@@ -62,12 +60,12 @@ Clona el repositorio o descarga el código fuente:
 
 ```bash
 git clone https://github.com/inkDexProject/inkDex
-cd inkdex
+cd inkDex
 ```
 
 ### 2. Configurar la biblioteca de Calibre
 
-Crea un archivo local `config.py` tomando como referencia `config.example.py`.
+Crea un archivo local `config.py` tomando como referencia `config_example.py`.
 
 Configura la ruta de la biblioteca mediante `RUTA_CALIBRE_POR_DEFECTO` o la variable de entorno `INKDEX_CALIBRE_LIBRARY`. La ruta debe apuntar a la carpeta que contiene `metadata.db`.
 
